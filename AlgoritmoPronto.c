@@ -20,10 +20,10 @@
 #define FAMINTO   (1)                      //Id para estado de fome
 #define COMENDO   (2)                      //Id para estado comendo
 //-- GLOBAL ---------------------------------------------------------------------
-int estado [QUANT];                        //Estado dos filósofos
-pthread_mutex_t mutex;                     //Região crítica
-pthread_mutex_t mux_filo [QUANT];                    //Mutex por filósofo
-pthread_t jantar[QUANT];                          //Todos os filósofos
+int estado [QUANT];                //Estado dos filósofos
+pthread_mutex_t mutex;             //Região crítica
+pthread_mutex_t mux_filo [QUANT];         //Mutex por filósofo
+pthread_t jantar[QUANT];                  //Todos os filósofos
 //-- PROTOTIPAÇÃO ---------------------------------------------------------------
 void * filosofo ( void * param );
 void pegar_hashi ( int id_filosofo );
@@ -96,6 +96,7 @@ void intencao ( int id_filosofo )
       (estado[ESQUERDA] != COMENDO) &&     //Se o vizinho da esquerda não está comendo
       (estado[DIREITA] != COMENDO ) )      //Se o vizinho da direita nсo está comendo
    {
+
       printf("Filosofo %d ganhou a vez de comer\n", id_filosofo);
       estado[ id_filosofo ] = COMENDO;          //Filósofo ganho a vez de comer
       pthread_mutex_unlock( &(mux_filo[id_filosofo]) );   //Libera os hashis
