@@ -15,49 +15,169 @@ mesa e continua pensando até que consiga pegar os dois
 garfos de uma vez só, Quando conseguir pegar os dois
 garfos o filósofo come e logo depois devolve ambos
 garfos à mesa.
+
+filoEsta[id].
 */
 
-//comendo
-//pensando até ter os 2 garfos
-// verificar se tem garfo
-//// Comer
-// -lpthread -lrt
-/*verificaFome (int numero)
+
+
+struct estado{
+  int comendo;
+  int pensando;
+  int stado; // igual a 1 Comendo | Igual a 0 pensando
+};
+
+struct binario{
+  int estado; // igual a 1 ocupado| Igual a 0 Livre
+};
+
+sem_t semaforo;
+int cont =0;
+struct binario garfo[5];
+struct estado filoEsta[5];
+
+int garfoE(int id)
 {
-  if()
+  if(id == 0){
+    return 4;
+  }
+  if(id == 1){
+    return 0;
+  }
+  if(id == 2){
+    return 1;
+  }
+  if(id == 3){
+    return 2;
+  }
+  if(id == 4){
+    return 3;
+  }
+}
+int garfoD(int id)
+{
+  if(id == 0)
   {
-    podeComer();
+    return 0;
+  }
+  if(id == 1)
+  {
+    return 1;
+  }
+  if(id == 2)
+  {
+    return 2;
+  }
+  if(id == 3)
+  {
+    return 3;
+  }
+  if(id == 4)
+  {
+    return 4;
+  }
+}
+
+void soltaGarfo(int id)
+{
+  garfo[garfoE(id)].estado = 0;
+  garfo[garfoD(id)].estado = 0;
+  filoEsta[id].pensando = 5;
+}
+
+void comer(int id)
+{
+
+  filoEsta[id].stado = 1;
+  filoEsta[id].comendo = 2;
+  garfo[garfoE(id)].estado = 1;
+  garfo[garfoD(id)].estado = 1;
+
+}
+
+void tentaComer (int id)
+{
+  if(garfo[garfoE(id)].estado == 0)
+  {
+    if(garfo[garfoD(id)].estado == 0)
+    {
+      comer(id);
+    }
+    else
+    {
+      filoEsta[id].pensando ++;
+    }
   }
   else
   {
-    fome--;
+    filoEsta[id].pensando ++;
   }
 }
 
-*/
-struct binario{
-  int estado;
-};
-struct binario garfo[5];
-
-sem_t semaforo;
-
-void *funcao (void * filo)
+void verifica (int id)
 {
-  int *num = (int *)filo; // NUMERO DO FILOSOFO
+  //Esta comendo
+  if(filoEsta[id].stado == 1)
+  {
+    if(filoEsta[id].comendo >= 1)
+    {
+      filoEsta[id].comendo --;
+    }
+    else
+    if(filoEsta[id].comendo == 0)
+    {
+      filoEsta[id].stado = 0;
+      soltaGarfo(id);
+    }
+  }
+
+  //Esta Pensando
+  if(filoEsta[id].stado == 0)
+  {
+    if(filoEsta[id].pensando >= 1)
+    {
+      filoEsta[id].pensando --;
+    }
+    else
+    if(filoEsta[id].pensando == 0)
+    {
+      tentaComer(id);
+    }
+  }
+}
+void mostraTudo (int id)
+{
+  printf("Filosofo %d ",id );
+  if(filoEsta[id].stado == 0){
+    printf("esta pensando\n");
+    printf("Garfo direito %d\n", garfo[garfoD(id)].estado);
+    printf("Garfo esquerdo %d\n", garfo[garfoE(id)].estado);
+  }
+  else
+  {
+    printf("esta comendo\n");
+    printf("Garfo direito %d\n", garfo[garfoD(id)].estado);
+    printf("Garfo esquerdo %d\n", garfo[garfoE(id)].estado);
+  }
+  printf("Status\n");
+  printf("Cont. comendo: %d\n",filoEsta[id].comendo);
+  printf("Cont. pensando: %d\n----------------\n",filoEsta[id].pensando);
+
+
+}
+void *funcao (void * id)
+{
   while(1)//CICLO infinito
   {
     sleep(1);
-    if()
-    {
-
-    }
     sem_wait(&semaforo);
-    printf("Teste %d\n", num);
-
+    verifica((int)id);
+    mostraTudo((int)id);
     sem_post(&semaforo);
   }
 }
+
+
 
 int main ()
 {
@@ -66,24 +186,37 @@ int main ()
   { // Quando garfo está com valor 0 ele não esta
     //  sendo utilizado
     garfo[i].estado = 0;
+    filoEsta[i].comendo = 0;
+    filoEsta[i].pensando = 5;
+    filoEsta[i].stado = 0;
   }
-
   sem_init(&semaforo, 0, 1);
 
-  pthread_t filo5;
   pthread_t filo4;
   pthread_t filo3;
   pthread_t filo2;
   pthread_t filo1;
+  pthread_t filo0;
 
-  pthread_create(&filo1, NULL, funcao, (void*)1);
-  pthread_create(&filo2, NULL, funcao, (void*)2);
-  pthread_create(&filo3, NULL, funcao, (void*)3);
-  pthread_create(&filo4, NULL, funcao, (void*)4);
-  pthread_create(&filo5, NULL, funcao, (void*)5);
+  pthread_create(&filo0, NULL, funcao, (void *)(0));
+  pthread_create(&filo1, NULL, funcao, (void *)(1));
+  pthread_create(&filo2, NULL, funcao, (void *)(2));
+  pthread_create(&filo3, NULL, funcao, (void *)(3));
+
+  pthread_create(&filo4, NULL, funcao, (void *)(4));
 
   pthread_exit(NULL);
   sem_destroy(&semaforo);
 
   return 0;
 }
+
+
+/*
+for(i = 0; i < 5; i++) {
+  printf("\n----------\ngarfo:%d \nEstadoComendo: %d \nEstadoPensando: %d \nstd: %d "
+  ,garfo[i].estado, filoEsta[i].comendo,
+  filoEsta[i].pensando,filoEsta[i].stado);
+}
+printf("\n");
+*/
