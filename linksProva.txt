@@ -1,0 +1,6 @@
+http://www.cprogressivo.net/2013/10/Operacoes-com-arquivos-FILE-fopen-modos-de-abertura-fechamento-modo-texto-binario-EOF-fclose-fcloseall.html
+
+http://www.cprogressivo.net/2013/11/Escrevendo-em-arquivos-As-funcoes-fputc-fprintf-fputs.html
+
+
+http://www.cprogressivo.net/2013/11/Como-ler-arquivos-em-C-As-funcoes-fgetc-fscanf-fgets.html
